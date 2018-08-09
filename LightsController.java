@@ -77,52 +77,101 @@ public class LightsController {
             if(sensor.equals("carNS")){
                 intersection.turnEWamber();
                 intersection.restartTimer(3000);
-                
+
                 state="EWstopping";
 
             }
-            //else if (sensor.equals("....
+
         }
         else if(state.equals("EWstopping")){
             if(sensor.equals("timerExpired")){
                 intersection.turnEWred();
-                state="NSgoReady";
                 intersection.turnNSgreen();
                 intersection.restartTimer(15000);
 
-	   
+                state ="NSgo";
+            }
+            else if(sensor.equals("carEW")){
+
+                state="EWstoppingcarEW";
             }
 
         }
-        // actions and transitions from the NSgo state
-        else if (state.equals("NSgoReady")){
+        else if(state.equals("EWstoppingcarEW")){
+            if(sensor.equals("timerExpired")){
+                intersection.turnEWred();
+                intersection.turnNSgreen();
+                intersection.restartTimer(1500);
 
-            if(sensor.equals("carEW")){
+                state="NSgoMustChange";
+            }  
+        }
+        else if(state.equals("NSgo")){
+            if(sensor.equals("timerExpired")){
+                state="NSgoReady";
+            }
+            else if(sensor.equals("carEw")){
+                state="NSgoMustChange";
+            }
+
+        }
+        else if(state.equals("NSgoMustChange")){
+            if(sensor.equals("timerExpired")){
                 intersection.turnNSamber();
                 intersection.restartTimer(3000);
                 state="NSstopping";
-
             }
+
         }
+        else if(state.equals("NSgoReady")){
+        if(sensor.equals("carEW")){
+            intersection.turnNSamber();
+            intersection.restartTimer(3000);
+            
+        state="NSstopping";
+    }
+    }
         else if(state.equals("NSstopping")){
-            if(sensor.equals("timerExpired")){
-                intersection.turnEWgreen();
-                state="EWgoReady";
-                intersection.turnNSred();
-                intersection.restartTimer(15000);
-
-	   
-            }
-
+        if(sensor.equals("timerExpired")){
+        intersection.turnNSred();
+        intersection.turnEWgreen();
+        intersection.restartTimer(15000);
+        state="EWgo";
         }
+        else if(sensor.equals("carNS")){
+        state="NSstoppingCarNS";
+        }
+        }
+        else if(state.equals("EWgo")){
+        if(sensor.equals("timerExpired")){
+        state="EWgoReady";
+        }
+        else if(sensor.equals("carNS")){
+        state="EWgoMustChange";
+        }
+        }
+        else if(state.equals("EWgoMustChange")){
+        if(sensor.equals("timerExpired")){
+        intersection.turnEWamber();
+        intersection.restartTimer(15000);
+        }
+        }
+        else if(state.equals("NSstoppingCarNS")){
+        if(sensor.equals("timerExpired")){
+        intersection.turnNSred();
+        intersection.turnEWgreen();
+        intersection.restartTimer(15000);
+        state="EWgoMustChange";
+        
+        }
+        }
+
         // act
     }
-
 
     public void reset(){
         state = "EWgoReady";
     }
-
 
     public static void main(String[] args){
         LightsSimulation.main(args);
